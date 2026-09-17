@@ -2,10 +2,19 @@ using UnityEngine;
 
 public class Movimento : MonoBehaviour
 {
-    public float speed = 5f;
+    public float movespeed = 5f;        //velocidade normal
+    public float dashSpeed = 15f;      // velocidade durante o dash
+    public float dashDuration = 0.2f;   // tempo que o das dura
+    public float dasCooldown = 1f;     // tempon de recarga do dash
 
-    private Rigidbody2D rb;
+    private Rigidbody2D rb;            // Rigidboy do player
 
+
+    private Vector2 moveInput;
+    private bool isdashing = false;
+    private float dashTimeLeft;
+    private float lasDashR;
+    float EndDash;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,11 +27,25 @@ public class Movimento : MonoBehaviour
     void Update()
     {
         float moveHorizontal = Input.GetAxis("Horizontal");  //Vai reconhecer o movimento horizontal
-        rb.linearVelocity = new Vector2(moveHorizontal* speed, rb.linearVelocity.y); //Fará o objeto se movimentar para a direção do eixo x e y; 
+        rb.linearVelocity = new Vector2(moveHorizontal* movespeed, rb.linearVelocity.y); //Farï¿½ o objeto se movimentar para a direï¿½ï¿½o do eixo x e y; 
 
-        if (Input.GetKeyDown(KeyCode.Space)) //Atribuirá o movimento de pulo na tecla espaço
+        if (Input.GetKeyDown(KeyCode.Space)) //Atribuirï¿½ o movimento de pulo na tecla espaï¿½o
         {
             rb.AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);  //Vai desenvolver a fisica necessaria para o objeto pular
+        }
+
+        void FixedUpdate()
+        {
+            if (isdashing)
+            {
+                rb.linearVelocity = moveInput * dashSpeed;
+                dashTimeLeft -= Time.fixedDeltaTime;
+
+                if (dashTimeLeft <= 0)
+                {
+                    
+                }
+            }
         }
     }
 }
