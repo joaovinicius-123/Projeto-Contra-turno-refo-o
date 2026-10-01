@@ -1,19 +1,21 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Movimento : MonoBehaviour
 {
-    public float movespeed = 100f;        //velocidade normal
+    public float movespeed = 78f;        //velocidade normal
     public float dashSpeed = 99f;      // velocidade durante o dash
     public float dashDuration = 0.2f;   // tempo que o das dura
-    public float dasCooldown = 1f;     // tempon de recarga do dash
+    public float dasCooldown = 1f;   // tempon de recarga do dash
 
-
+    private bool isGrounded = false;
 
 
     private Rigidbody2D rb;  // Rigidboy do player
     private float cooldown = 1f;
-    private float forçaDash = 99f;
+    private float forçaDash = 50f;
     private float duração = 0.15f;
     private bool podedash = true;
     private bool fazendoDash = false;
@@ -38,8 +40,33 @@ public class Movimento : MonoBehaviour
         }
 
         float x = Input.GetAxisRaw("Horizontal");
-        if ( x != 0f) ultimadireçãoX = Mathf.Sign(x);
+        if (x != 0f) ultimadireçãoX = Mathf.Sign(x);
+
+
     }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true; //Vai reconhecer quando o jogador estiver no chão
+        }
+
+        if (collision.gameObject.CompareTag("Dano"))
+        {
+            SceneManager.LoadScene(0);
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false; //Vai reconhecer quando o jogador não estiver no chão
+        }
+    }
+
+
 
     IEnumerator FazerDash()
     {
@@ -49,7 +76,7 @@ public class Movimento : MonoBehaviour
         float gravidadeOriginal = rb.gravityScale;
         rb.gravityScale = 0f;
 
-        rb.linearVelocity = new Vector2(ultimadireçãoX * forçaDash, 0f);
+        rb.linearVelocity = new Vector2 (ultimadireçãoX * forçaDash, 0f);
 
         yield return new WaitForSeconds(duração);
 
