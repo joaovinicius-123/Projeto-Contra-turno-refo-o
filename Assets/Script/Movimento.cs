@@ -1,20 +1,23 @@
+using System.Collections;
 using UnityEngine;
 
 public class Movimento : MonoBehaviour
 {
-    public float movespeed = 5f;        //velocidade normal
-    public float dashSpeed = 15f;      // velocidade durante o dash
+    public float movespeed = 100f;        //velocidade normal
+    public float dashSpeed = 99f;      // velocidade durante o dash
     public float dashDuration = 0.2f;   // tempo que o das dura
     public float dasCooldown = 1f;     // tempon de recarga do dash
 
-    private Rigidbody2D rb;            // Rigidboy do player
 
 
-    private Vector2 moveInput;
-    private bool isdashing = false;
-    private float dashTimeLeft;
-    private float lasDashR;
-    float EndDash;
+
+    private Rigidbody2D rb;  // Rigidboy do player
+    private float cooldown = 1f;
+    private float forçaDash = 99f;
+    private float duração = 0.15f;
+    private bool podedash = true;
+    private bool fazendoDash = false;
+    private float ultimadireçãoX = 1f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -34,18 +37,38 @@ public class Movimento : MonoBehaviour
             rb.AddForce(new Vector2(0f, 5f), ForceMode2D.Impulse);  //Vai desenvolver a fisica necessaria para o objeto pular
         }
 
-        void FixedUpdate()
-        {
-            if (isdashing)
-            {
-                rb.linearVelocity = moveInput * dashSpeed;
-                dashTimeLeft -= Time.fixedDeltaTime;
+        float x = Input.GetAxisRaw("Horizontal");
+        if ( x != 0f) ultimadireçãoX = Mathf.Sign(x);
+    }
 
-                if (dashTimeLeft <= 0)
-                {
-                    
-                }
-            }
-        }
+    IEnumerator FazerDash()
+    {
+        podedash = false;
+        fazendoDash = true;
+
+        float gravidadeOriginal = rb.gravityScale;
+        rb.gravityScale = 0f;
+
+        rb.linearVelocity = new Vector2(ultimadireçãoX * forçaDash, 0f);
+
+        yield return new WaitForSeconds(duração);
+
+        rb.gravityScale = gravidadeOriginal;
+        fazendoDash = false;
+
+
+        yield return new WaitForSeconds(cooldown);
+        podedash = true;
     }
 }
+
+        
+       
+     
+        
+       
+        
+    
+
+
+        
